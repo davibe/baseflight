@@ -744,6 +744,14 @@ void loop(void)
             axisPID[axis] =  PTerm + ITerm - DTerm;
         }
 
+        if (angle[ROLL] > 900 || angle[ROLL] < -900) {
+          int16_t temp = abs(angle[ROLL]) - 900;
+          temp *= 2;
+          rcCommand[3] -= temp;
+          if (rcCommand[3] < 1100)
+            rcCommand[3] = 1100;
+        }
+
         mixTable();
         writeServos();
         writeMotors();
