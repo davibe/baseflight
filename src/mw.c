@@ -744,10 +744,15 @@ void loop(void)
             axisPID[axis] =  PTerm + ITerm - DTerm;
         }
 
-        if (angle[ROLL] > 900 || angle[ROLL] < -900) {
-          int16_t temp = abs(angle[ROLL]) - 900;
-          temp *= 2;
-          rcCommand[3] -= temp;
+        bool upside_down = angle[ROLL] > 900 || angle[ROLL] < -900;
+
+        if (upside_down) {
+          int16_t roll_delta, pitch_delta, delta;
+          roll_delta = abs(angle[ROLL]) - 900;
+          pitch_delta = abs(abs(angle[PITCH]) - 900);
+          delta = min(roll_delta, pitch_delta);
+          delta *= 2;
+          rcCommand[3] -= delta;
           if (rcCommand[3] < 1100)
             rcCommand[3] = 1100;
         }
