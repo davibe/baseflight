@@ -175,7 +175,8 @@ char *stmHexLoader(serialStruct_t *s, FILE *fp) {
 	return 0;
 }
 
-void stmLoader(serialStruct_t *s, FILE *fp, unsigned char overrideParity, unsigned char noSendR) {
+void stmLoader(serialStruct_t *s, FILE *fp, unsigned char overrideParity,
+    unsigned char noSendR, unsigned char eraseOnly) {
 	char c;
 	unsigned char b1, b2, b3;
 	unsigned char i, n;
@@ -301,7 +302,7 @@ void stmLoader(serialStruct_t *s, FILE *fp, unsigned char overrideParity, unsign
 	} while (!stmWaitAck(s, STM_RETRIES_LONG));
 
 	// global erase
-	if (getResults[6] == 0x44) {
+	if ((getResults[6] == 0x44) || (eraseOnly)) {
 		// mass erase
 		if (!stmWrite(s, "FFFF"))
 			goto erase_flash;
@@ -317,6 +318,10 @@ void stmLoader(serialStruct_t *s, FILE *fp, unsigned char overrideParity, unsign
 	}
 
 	printf("Done.\n");
+
+  if (eraseOnly) {
+    return;
+  }
 	
 	// upload hex file
 	printf("Flashing device...\n");

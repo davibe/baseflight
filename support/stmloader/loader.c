@@ -36,10 +36,11 @@ char port[256];
 unsigned int baud;
 unsigned char overrideParity;
 unsigned char noSendR;
+unsigned char eraseOnly;
 char firmFile[256];
 
 void loaderUsage(void) {
-	fprintf(stderr, "usage: loader <-h> <-p device_file> <-b baud_rate> <-f firmware_file> <-o> <-n>\n");
+	fprintf(stderr, "usage: loader <-h> <-p device_file> <-b baud_rate> <-f firmware_file> <-o> <-n> <-e>\n");
 }
 
 unsigned int loaderOptions(int argc, char **argv) {
@@ -49,6 +50,7 @@ unsigned int loaderOptions(int argc, char **argv) {
 	baud = DEFAULT_BAUD;
 	overrideParity = 0;
 	noSendR = 0;
+	eraseOnly = 0;
 	strncpy(firmFile, FIRMWARE_FILENAME, sizeof(firmFile));
 
 	/* options descriptor */
@@ -59,10 +61,11 @@ unsigned int loaderOptions(int argc, char **argv) {
 		{ "firm_file",				required_argument,	NULL,		'f' },
 		{ "override_parity",		no_argument,			NULL,		'o' },
 		{ "no_send_r",				no_argument,			NULL,		'n' },
+		{ "erase_only",				no_argument,			NULL,		'e' },
 		{ NULL,						0,							NULL,		0 }
 	};
 
-	while ((ch = getopt_long(argc, argv, "hp:b:f:o:n", longopts, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "hp:b:f:o:n:e", longopts, NULL)) != -1)
 		switch (ch) {
 		case 'h':
 			loaderUsage();
@@ -82,6 +85,9 @@ unsigned int loaderOptions(int argc, char **argv) {
 			break;
 		case 'n':
 			noSendR = 1;
+			break;
+		case 'e':
+			eraseOnly = 1;
 			break;
 		default:
 			loaderUsage();
@@ -108,6 +114,12 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	if (eraseOnly == 1) {
+		printf("Erasing flash..");
+		stmLoader(s, NULL, overrideParity, noSendR, eraseOnly);
+		return 0;
+	}
+
 	fw = fopen(firmFile, "r");
 	if (!fw) {
 		fprintf(stderr, "Cannot open firmware file '%s', aborting.\n", firmFile);
@@ -115,7 +127,7 @@ int main(int argc, char **argv) {
 	}
 	else {
 		printf("Upgrading STM on port %s from %s...\n", port, firmFile);
-		stmLoader(s, fw, overrideParity, noSendR);
+		stmLoader(s, fw, overrideParity, noSendR, eraseOnly);
 	}
 
 	return 0;
