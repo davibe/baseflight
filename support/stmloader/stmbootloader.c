@@ -302,7 +302,7 @@ void stmLoader(serialStruct_t *s, FILE *fp, unsigned char overrideParity,
 	} while (!stmWaitAck(s, STM_RETRIES_LONG));
 
 	// global erase
-	if ((getResults[6] == 0x44) || (eraseOnly)) {
+	if (getResults[6] == 0x44) {
 		// mass erase
 		if (!stmWrite(s, "FFFF"))
 			goto erase_flash;
