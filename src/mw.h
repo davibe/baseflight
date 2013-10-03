@@ -97,6 +97,7 @@ enum {
     BOXCALIB,
     BOXGOV,
     BOXOSD,
+    BOXMOTORTEST,
     CHECKBOXITEMS
 };
 
@@ -430,6 +431,7 @@ void mixerLoadMix(int index);
 void writeServos(void);
 void writeMotors(void);
 void writeAllMotors(int16_t mc);
+void writeOneMotor(uint8_t motor_index, int16_t value);
 void mixTable(void);
 
 // Serial

@@ -251,6 +251,20 @@ void writeAllMotors(int16_t mc)
     writeMotors();
 }
 
+void writeOneMotor(uint8_t motor_index, int16_t value)
+{
+    uint8_t i;
+
+    for (i = 0; i < numberMotor; i++)
+        if (i == motor_index)
+            motor[i] = value;
+        else
+          motor[i] = mcfg.mincommand;
+
+    writeMotors();
+}
+
+
 static void airplaneMixer(void)
 {
 #if 0

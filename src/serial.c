@@ -82,6 +82,7 @@ struct box_t {
     { BOXCALIB, "CALIB;", 17 },
     { BOXGOV, "GOVERNOR;", 18 },
     { BOXOSD, "OSD SW;", 19 },
+    { BOXMOTORTEST, "MOTOR TEST;", 20 },
     { CHECKBOXITEMS, NULL, 0xFF }
 };
 
@@ -110,7 +111,8 @@ static const char boxnames[] =
     "LLIGHTS;"
     "CALIB;"
     "GOVERNOR;"
-    "OSD SW;";
+    "OSD SW;"
+    "MOTOR TEST;";
 
 const uint8_t boxids[] = {      // permanent IDs associated to boxes. This way, you can rely on an ID number to identify a BOX function.
     0,                          // "ARM;"
@@ -133,6 +135,7 @@ const uint8_t boxids[] = {      // permanent IDs associated to boxes. This way, 
     17,                         // "CALIB;"
     18,                         // "GOVERNOR;"
     19,                         // "OSD_SWITCH;"
+    20,                         // "MOTOR_TEST;"
 };
 
 static const char pidnames[] =
@@ -386,10 +389,16 @@ static void evaluateCommand(void)
 #if FUCK_MULTIWII
         // OK, so you waste all the fucking time to have BOXNAMES and BOXINDEXES etc, and then you go ahead and serialize enabled shit simply by stuffing all
         // the bits in order, instead of setting the enabled bits based on BOXINDEX. WHERE IS THE FUCKING LOGIC IN THIS, FUCKWADS.
-        serialize32(f.ANGLE_MODE << BOXANGLE | f.HORIZON_MODE << BOXHORIZON |
-                    f.BARO_MODE << BOXBARO | f.MAG_MODE << BOXMAG | f.HEADFREE_MODE << BOXHEADFREE | rcOptions[BOXHEADADJ] << BOXHEADADJ |
-                    rcOptions[BOXCAMSTAB] << BOXCAMSTAB | rcOptions[BOXCAMTRIG] << BOXCAMTRIG |
-                    f.GPS_HOME_MODE << BOXGPSHOME | f.GPS_HOLD_MODE << BOXGPSHOLD |
+        serialize32(f.ANGLE_MODE << BOXANGLE |
+                    f.HORIZON_MODE << BOXHORIZON |
+                    f.BARO_MODE << BOXBARO |
+                    f.MAG_MODE << BOXMAG |
+                    f.HEADFREE_MODE << BOXHEADFREE |
+                    rcOptions[BOXHEADADJ] << BOXHEADADJ |
+                    rcOptions[BOXCAMSTAB] << BOXCAMSTAB |
+                    rcOptions[BOXCAMTRIG] << BOXCAMTRIG |
+                    f.GPS_HOME_MODE << BOXGPSHOME |
+                    f.GPS_HOLD_MODE << BOXGPSHOLD |
                     f.PASSTHRU_MODE << BOXPASSTHRU |
                     rcOptions[BOXBEEPERON] << BOXBEEPERON |
                     rcOptions[BOXLEDMAX] << BOXLEDMAX |
@@ -398,6 +407,7 @@ static void evaluateCommand(void)
                     rcOptions[BOXCALIB] << BOXCALIB |
                     rcOptions[BOXGOV] << BOXGOV |
                     rcOptions[BOXOSD] << BOXOSD |
+                    rcOptions[BOXMOTORTEST] << BOXMOTORTEST |
                     f.ARMED << BOXARM);
 #else
         // Serialize the boxes in the order we delivered them

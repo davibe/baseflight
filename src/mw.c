@@ -1,5 +1,6 @@
 #include "board.h"
 #include "mw.h"
+#include "motortest.h"
 
 // June 2013     V2.2-dev
 
@@ -881,6 +882,7 @@ void loop(void)
         pid_controller();
 
         mixTable();
+        motortest_loop();
         writeServos();
         writeMotors();
     }
